@@ -1,0 +1,392 @@
+/* styles.css — token-driven. Every color/metric is a custom property on :root,
+   redefined for dark under a guarded media query and again under [data-theme].
+   Primary time >=7:1 (AAA), host line >=4.5:1 (AA) in BOTH themes via dedicated
+   tokens (never an opacity hack). Focus = colored ring; selected = filled bg +
+   emphasized border — never conflated. */
+
+:root {
+  --bg: #ffffff;
+  --bg-subtle: #f9fafb;
+  --surface: #ffffff;
+  --border: #e4e7ec;
+  --border-hover: #d0d5dd;
+  --text-emphasis: #101828; /* primary time ~16:1 */
+  --text-default: #344054;
+  --text-muted: #475467;    /* host line ~8:1 AA */
+  --text-subtle: #667085;   /* headers/dividers ~4.9:1 AA */
+  --accent: #101828;
+  --accent-fg: #ffffff;
+  --selected-bg: #f2f4f7;
+  --selected-border: #101828;
+  --focus-ring: #2563eb;
+  --available-dot: #17b26a;
+  --tint-nextday: rgba(16, 24, 40, 0.06);
+  --error-fg: #b42318;
+  --error-bg: #fef3f2;
+  --shadow-popover: 0 8px 28px rgba(16, 24, 40, 0.16);
+
+  --radius-slot: 10px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --space: 8px;
+  --col-pad: 16px;
+
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0c0e;
+    --bg-subtle: #161619;
+    --surface: #0c0c0e;
+    --border: #2a2a2f;
+    --border-hover: #3a3a40;
+    --text-emphasis: #f5f5f6;
+    --text-default: #e4e4e7;
+    --text-muted: #a1a1aa;
+    --text-subtle: #8b8b94;
+    --accent: #f5f5f6;
+    --accent-fg: #101828;
+    --selected-bg: #1c1c20;
+    --selected-border: #f5f5f6;
+    --focus-ring: #5b8def;
+    --available-dot: #3ccb7f;
+    --tint-nextday: rgba(255, 255, 255, 0.08);
+    --error-fg: #f97066;
+    --error-bg: #2a1512;
+    --shadow-popover: 0 8px 28px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0c0c0e;
+  --bg-subtle: #161619;
+  --surface: #0c0c0e;
+  --border: #2a2a2f;
+  --border-hover: #3a3a40;
+  --text-emphasis: #f5f5f6;
+  --text-default: #e4e4e7;
+  --text-muted: #a1a1aa;
+  --text-subtle: #8b8b94;
+  --accent: #f5f5f6;
+  --accent-fg: #101828;
+  --selected-bg: #1c1c20;
+  --selected-border: #f5f5f6;
+  --focus-ring: #5b8def;
+  --available-dot: #3ccb7f;
+  --tint-nextday: rgba(255, 255, 255, 0.045);
+  --error-fg: #f97066;
+  --error-bg: #2a1512;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text-default);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+/* ── Slot picker shell ─────────────────────────────────────────────── */
+.picker {
+  display: flex;
+  flex-direction: column;
+  width: 340px;
+  max-width: 100%;
+  max-height: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ── Timezone context bar (the relocated, sticky fix) ──────────────── */
+.ctxbar {
+  flex: none;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px var(--col-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ctxbar-zones {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.zone { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.zone-kind {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+.zone.host { text-align: right; }
+.zone-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-default);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.offset-phrase {
+  font-size: 12px;
+  color: var(--text-subtle);
+  text-align: center;
+  padding-top: 2px;
+}
+.ctxbar-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+/* segmented hour-cycle toggle + collapse toggle */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.seg button {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 24px;
+  padding: 4px 10px;
+  border: 0;
+  background: var(--surface);
+  color: var(--text-subtle);
+  cursor: pointer;
+}
+.seg button:hover { color: var(--text-default); }
+.seg button[aria-pressed="true"] {
+  background: var(--selected-bg);
+  color: var(--text-emphasis);
+}
+.linkbtn {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  min-height: 24px;
+  color: var(--text-subtle);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+.linkbtn:hover { color: var(--text-default); }
+
+/* ── Date heading ──────────────────────────────────────────────────── */
+.date-heading {
+  flex: none;
+  background: var(--surface);
+  padding: 10px var(--col-pad) 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-emphasis);
+}
+
+/* ── Slot list ─────────────────────────────────────────────────────── */
+.slotlist {
+  list-style: none;
+  margin: 0;
+  padding: 4px var(--col-pad) var(--col-pad);
+  overflow-y: auto;
+  flex: 1 1 auto;
+  scrollbar-width: thin;
+}
+.slotlist:focus-visible { outline: none; }
+
+.period-header {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  padding: 10px 2px 4px;
+}
+
+.host-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-subtle);
+  padding: 10px 2px 6px;
+  margin-top: 2px;
+  border-top: 1px solid var(--border);
+}
+.host-divider::after { content: ""; }
+
+/* ── Slot option ───────────────────────────────────────────────────── */
+.slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-slot);
+  background: var(--surface);
+  color: var(--text-emphasis);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: background-color 90ms ease, border-color 90ms ease;
+}
+.slot.dual { min-height: 60px; }
+/* Next-day band: a tint PLUS a left accent that survives hover, so the rollover
+   stays legible even when the slot is hovered or the tint is subtle. */
+.slot.nextday {
+  background: var(--tint-nextday);
+  border-left: 3px solid var(--text-subtle);
+  padding-left: 11px;
+}
+.slot:hover { border-color: var(--border-hover); background: var(--bg-subtle); }
+.slot.nextday:hover { background: var(--tint-nextday); }
+
+.slot:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.slot[aria-selected="true"] {
+  background: var(--selected-bg);
+  border-color: var(--selected-border);
+  box-shadow: inset 0 0 0 1px var(--selected-border);
+}
+.slot[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: var(--text-subtle);
+  border-style: dashed;
+  background: transparent;
+}
+.slot[aria-disabled="true"] .dot { display: none; }
+.slot[aria-disabled="true"] .slot-primary,
+.slot[aria-disabled="true"] .slot-host { color: var(--text-subtle); }
+.slot[aria-disabled="true"] .slot-primary {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.dot {
+  flex: none;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--available-dot);
+}
+.slot-times { display: flex; flex-direction: column; min-width: 0; }
+.slot-primary {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text-emphasis);
+}
+.slot-host {
+  font-size: 13px;
+  font-weight: 450;
+  line-height: 18px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.daychip {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 6px;
+  margin-left: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--border);
+  color: var(--text-default);
+  vertical-align: baseline;
+}
+
+/* ── Confirm bar ───────────────────────────────────────────────────── */
+.confirmbar {
+  flex: none;
+  border-top: 1px solid var(--border);
+  padding: 12px var(--col-pad);
+  background: var(--surface);
+}
+.confirm {
+  width: 100%;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: var(--accent-fg);
+  cursor: pointer;
+}
+.confirm:hover { opacity: 0.92; }
+.confirm:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* ── States ────────────────────────────────────────────────────────── */
+.state { padding: 28px var(--col-pad); text-align: center; color: var(--text-subtle); }
+.state-title { font-size: 14px; font-weight: 600; color: var(--text-default); margin-bottom: 4px; }
+.state-body { font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+.state .confirm { background: var(--accent); color: var(--accent-fg); width: auto; display: inline-block; }
+.state.error { color: var(--error-fg); }
+
+.skeleton-row {
+  min-height: 60px;
+  margin-top: 8px;
+  border-radius: var(--radius-slot);
+  background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--border) 37%, var(--bg-subtle) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* ── Date strip (demo chrome) ──────────────────────────────────────── */
+.datestrip { display: flex; gap: 6px; flex-wrap: wrap; }
+.dateday {
+  font: inherit; font-size: 13px; font-weight: 500;
+  padding: 8px 12px; border-radius: var(--radius-md);
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-default); cursor: pointer;
+}
+.dateday[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.dateday:not([aria-pressed="true"]):hover { border-color: var(--border-hover); background: var(--bg-subtle); }
+.dateday:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* date-change entrance */
+.enter { animation: enter 120ms ease-out; }
+@keyframes enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, .slot, .enter { transition: none !important; animation: none !important; }
+  .skeleton-row { background: var(--bg-subtle); }
+}
+
+/* ── Phone width ───────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .picker { width: 100%; max-height: none; }
+}

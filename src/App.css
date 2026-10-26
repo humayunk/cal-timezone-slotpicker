@@ -1,0 +1,133 @@
+/* app.css — demo chrome + the combobox/abbrev bits layered on the tokens. */
+
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px max(16px, env(safe-area-inset-left, 0px)) 64px;
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.brand { font-size: 15px; font-weight: 600; color: var(--text-emphasis); }
+.muted { color: var(--text-subtle); font-weight: 500; }
+
+.lede {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-default);
+  max-width: 62ch;
+  margin: 18px 0 24px;
+}
+.lede strong { color: var(--text-emphasis); font-weight: 600; }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-subtle);
+  margin-bottom: 28px;
+}
+.control { display: flex; flex-direction: column; gap: 8px; }
+.control-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-subtle);
+}
+.control-note { font-size: 12px; color: var(--text-subtle); max-width: 36ch; }
+
+.booking {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.rail {
+  width: 220px;
+  flex: none;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rail-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #7c9eff, #c17cff);
+  margin-bottom: 12px;
+}
+.rail-host { font-size: 13px; color: var(--text-subtle); }
+.rail-title { font-size: 18px; font-weight: 700; color: var(--text-emphasis); margin: 2px 0 14px; }
+.rail-meta { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rail-meta li { font-size: 13px; color: var(--text-default); }
+
+.booking-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; flex: 1 1 340px; }
+
+.foot {
+  margin-top: 36px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-subtle);
+  max-width: 70ch;
+}
+.foot code { font-size: 11px; background: var(--bg-subtle); padding: 1px 5px; border-radius: 4px; }
+
+/* zone abbreviation under each zone value */
+.zone-abbrev { font-size: 11px; color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+.zone.host .zone-abbrev { display: block; }
+
+/* confirmed note */
+.confirmed-note { font-size: 13px; font-weight: 600; color: var(--text-emphasis); }
+.confirmed-sub { font-size: 12px; font-weight: 400; color: var(--text-subtle); margin-top: 2px; }
+
+/* ── Combobox ──────────────────────────────────────────────────────── */
+.combo { position: relative; }
+.combo-input {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-default);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  width: 128px;
+  max-width: 100%;
+}
+.combo-input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.combo-list {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  max-height: 240px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-popover);
+}
+.combo-opt {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.combo-opt.active { background: var(--selected-bg); }
+.combo-city { font-size: 13px; font-weight: 500; color: var(--text-emphasis); }
+.combo-region { font-size: 11px; color: var(--text-subtle); }
+
+@media (max-width: 640px) {
+  .page { padding: 24px max(16px, env(safe-area-inset-left, 0px)) 48px; }
+  .rail { width: 100%; }
+}
