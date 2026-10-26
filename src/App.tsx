@@ -24,7 +24,7 @@ export default function App() {
     <div className="page">
       <header className="masthead">
         <div className="brand">
-          Timezone-clear booking · <span className="muted">a Cal.com coss ui concept</span>
+          Timezone-clear booking · <span className="muted">a booking primitive for Cal.com</span>
         </div>
         <div className="seg" role="group" aria-label="Theme">
           {(["system", "light", "dark"] as Theme[]).map((t) => (
